@@ -84,7 +84,7 @@ def make_nifty_analysis(date_obj, out_path):
     Image.fromarray(np.clip(arr, 0, 255).astype(np.uint8)).save(out_path, quality=95)
 
 if __name__ == "__main__":
-    today = (datetime.datetime.utcnow() + datetime.timedelta(hours=5, minutes=30)).date()
+    today = (datetime.datetime.utcnow() + datetime.timedelta(hours=5, minutes=30)).date() + datetime.timedelta(days=1)
     p1 = os.path.join(OUTPUT, "Post_Market_Update.jpg")
     p2 = os.path.join(OUTPUT, "Nifty_Analysis.jpg")
     make_post_market_update(today, p1)
