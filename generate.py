@@ -9,7 +9,6 @@ import cv2, numpy as np
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 
 FP = "/usr/share/fonts/truetype/google-fonts/Poppins-%s.ttf"
-# If Poppins isn't installed on the runner, DejaVu Sans Bold is used as a fallback.
 FALLBACK = "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
 INTER_FP = "/usr/share/fonts/opentype/inter/Inter-%s.otf"
 INTER_FALLBACK = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
@@ -20,6 +19,7 @@ def inter_font(weight, size):
     if not os.path.exists(path):
         path = INTER_FALLBACK
     return ImageFont.truetype(path, size)
+
 TEMPLATES = os.path.join(os.path.dirname(__file__), "templates")
 OUTPUT = os.path.join(os.path.dirname(__file__), "output")
 os.makedirs(OUTPUT, exist_ok=True)
@@ -69,24 +69,21 @@ def make_post_market_update(date_obj, out_path):
 def make_nifty_analysis(date_obj, out_path):
     arr = np.array(Image.open(os.path.join(TEMPLATES, "Nifty_Analysis_New.jpg")).convert("RGB")).astype(np.float32)
 
-    # Redraw the white pill itself (solid rounded rect) instead of inpainting —
-    # the pill is a flat colour, so this is exact and avoids any edge distortion.
-    PILL = (490, 828, 1057, 902)   # left, top, right, bottom (measured on the template)
+    PILL = (490, 828, 1057, 902)
     RADIUS = 20
     mask = Image.new("L", (arr.shape[1], arr.shape[0]), 0)
     ImageDraw.Draw(mask).rounded_rectangle(PILL, radius=RADIUS, fill=255)
     mask = np.array(mask).astype(np.float32) / 255.0
     arr = arr * (1 - mask[..., None]) + np.array([255, 255, 255], np.float32) * mask[..., None]
 
-    cx = (PILL[0] + PILL[2]) / 2       # pill's true horizontal centre
-    baseline = (PILL[1] + PILL[3]) / 2 + 13  # vertically centred for this font/size
+    cx = (PILL[0] + PILL[2]) / 2
+    baseline = (PILL[1] + PILL[3]) / 2 + 13
 
     txt = f'{date_obj.strftime("%A")}, {date_obj.day} {date_obj.strftime("%B")} \u2019{str(date_obj.year)[2:]}'
     arr = draw_text(arr, txt, "Medium", 36, cx, baseline, (25, 25, 25), inter=True)
     Image.fromarray(np.clip(arr, 0, 255).astype(np.uint8)).save(out_path, quality=95)
 
 if __name__ == "__main__":
-    # IST is UTC+5:30; the workflow runs in UTC, so adjust here.
     today = (datetime.datetime.utcnow() + datetime.timedelta(hours=5, minutes=30)).date()
     p1 = os.path.join(OUTPUT, "Post_Market_Update.jpg")
     p2 = os.path.join(OUTPUT, "Nifty_Analysis.jpg")
