@@ -80,7 +80,7 @@ def make_nifty_analysis(date_obj, out_path):
     baseline = (PILL[1] + PILL[3]) / 2 + 13
 
     txt = f'{date_obj.strftime("%A")}, {date_obj.day} {date_obj.strftime("%B")} \u2019{str(date_obj.year)[2:]}'
-    arr = draw_text(arr, txt, "Medium", 36, cx, baseline, (25, 25, 25), inter=True)
+    arr = draw_text(arr, txt, "extraBold", 36, cx, baseline, (25, 25, 25), inter=True)
     Image.fromarray(np.clip(arr, 0, 255).astype(np.uint8)).save(out_path, quality=95)
 
 if __name__ == "__main__":
