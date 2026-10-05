@@ -62,8 +62,8 @@ def make_post_market_update(date_obj, out_path):
     R, G, B = arr[..., 0], arr[..., 1], arr[..., 2]
     white = (R > 190) & (G > 190) & (B > 190)
     arr = erase(arr, white, 590, 250, 1210, 315, grow=6)
-    txt = f'{date_obj.strftime("%A")}, {date_obj.strftime("%d")} {date_obj.strftime("%B")} \u2019{str(date_obj.year)[2:]}'
-    arr = draw_text(arr, txt, "Bold", 40, cx, baseline, (25, 25, 25), inter=True)
+    txt = f'{date_obj.day} {date_obj.strftime("%B").upper()} \u2019{str(date_obj.year)[2:]}  |  {date_obj.strftime("%A").upper()}'
+    arr = draw_text(arr, txt, "Bold", 38, 900, 300, (235, 245, 250))
     Image.fromarray(np.clip(arr, 0, 255).astype(np.uint8)).save(out_path, quality=95)
 
 def make_nifty_analysis(date_obj, out_path):
@@ -79,8 +79,8 @@ def make_nifty_analysis(date_obj, out_path):
     cx = (PILL[0] + PILL[2]) / 2
     baseline = (PILL[1] + PILL[3]) / 2 + 13
 
-    txt = f'{date_obj.strftime("%A")}, {date_obj.day} {date_obj.strftime("%B")} \u2019{str(date_obj.year)[2:]}'
-    arr = draw_text(arr, txt, "extraBold", 36, cx, baseline, (25, 25, 25), inter=True)
+    txt = f'{date_obj.strftime("%A")}, {date_obj.strftime("%d")} {date_obj.strftime("%B")} \u2019{str(date_obj.year)[2:]}'
+    arr = draw_text(arr, txt, "Bold", 40, cx, baseline, (25, 25, 25), inter=True)
     Image.fromarray(np.clip(arr, 0, 255).astype(np.uint8)).save(out_path, quality=95)
 
 if __name__ == "__main__":
