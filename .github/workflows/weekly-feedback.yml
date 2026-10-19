@@ -1,0 +1,27 @@
+name: Weekly feedback
+
+on:
+  workflow_dispatch: {}
+
+jobs:
+  build-and-send:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install fonts and dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fonts-inter || true
+          pip install pillow numpy
+
+      - name: Make and email the Weekly Analysis images
+        env:
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          FEEDBACK_TO_ADDRESSES: ${{ secrets.FEEDBACK_TO_ADDRESSES }}
+        run: python weekly_feedback.py
