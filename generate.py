@@ -77,10 +77,20 @@ def make_nifty_analysis(date_obj, out_path):
     arr = arr * (1 - mask[..., None]) + np.array([255, 255, 255], np.float32) * mask[..., None]
 
     cx = (PILL[0] + PILL[2]) / 2
-    baseline = (PILL[1] + PILL[3]) / 2 + 13
 
     txt = f'{date_obj.strftime("%A")}, {date_obj.strftime("%d")} {date_obj.strftime("%B")} \u2019{str(date_obj.year)[2:]}'
-    arr = draw_text(arr, txt, "ExtraBold", 40, cx, baseline, (25, 25, 25), inter=True)
+
+    # Long dates (e.g. "Wednesday, 04 November") are wider than the pill,
+    # so shrink the font until the text fits inside it.
+    size = 40
+    while size > 24:
+        bb = inter_font("ExtraBold", size * S).getbbox(txt, anchor="ls")
+        if (bb[2] - bb[0]) / S <= 510:
+            break
+        size -= 1
+    baseline = (PILL[1] + PILL[3]) / 2 + size * 0.33
+
+    arr = draw_text(arr, txt, "ExtraBold", size, cx, baseline, (25, 25, 25), inter=True)
     Image.fromarray(np.clip(arr, 0, 255).astype(np.uint8)).save(out_path, quality=95)
 
 if __name__ == "__main__":
